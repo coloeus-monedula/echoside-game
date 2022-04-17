@@ -1,0 +1,7 @@
+# Import cache
+godot/.import/
+
+# Binaries
+godot/bin/
+godot/build/
+godot/lib/
