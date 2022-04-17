@@ -1,0 +1,3 @@
+[submodule "Godot/addons/gdinv"]
+	path = Godot/addons/gdinv
+	url = https://github.com/zcaliptium/gdinv
