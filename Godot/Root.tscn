@@ -1,17 +1,21 @@
 [gd_scene load_steps=2 format=2]
 
 [sub_resource type="GDScript" id=1]
-script/source = "extends \"res://src/battle_system/rng.gd\"
+script/source = "extends Node
 
 
 # Declare member variables here. Examples:
 # var a = 2
 # var b = \"text\"
 
+#https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	var battle_script = preload(\"res://src/battle_system/battle.gd\")
+	var test_array = [\"Wasp\",\"Bear\",\"Even Bigger Bear\", \"Enormous Wasp\"]	
+	var battle = battle_script.Battle.new(test_array)
+	battle.start_battle()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
