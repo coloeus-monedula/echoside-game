@@ -37,7 +37,7 @@ func create_enemy_rng(enemy, enemy_rngs):
 		"falter": enemy_falter,
 		"hp": enemy_hp,
 		"name": enemy_name
-}
+	}
 	enemy_rngs[counter] = enemy_block
 	counter +=1
 
@@ -59,7 +59,6 @@ func decide_action(creature_block):
 
 func is_run_successful(percentage):
 	var chance = rng.randi_range(1, 100)
-	print(chance)
 	if (chance <= percentage):
 		return true
 	else:
