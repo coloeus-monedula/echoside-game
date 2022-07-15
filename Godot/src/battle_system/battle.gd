@@ -12,7 +12,8 @@ var player_stats = {
 	"attack": 12,
 	"defend": 12,
 	"falter": 12,
-	"hp": 3
+	"hp": 3,
+	"run": 40
 }
 
 func _ready():
@@ -23,8 +24,8 @@ func _ready():
 func start_battle(enemy_array):	
 	self.enemy_array = enemy_array
 	rng.choose_enemy(enemy_array, enemy_rngs)
-	do_round()
-
+	print("Press enter to start or f to run")
+	round_done = true
 
 	
 func do_round():
@@ -54,8 +55,7 @@ func do_round():
 	get_outcome(player_action, enemy_action, enemy_rngs[0])
 	round_done = true
 	print(player_stats, enemy_rngs[0])
-	
-		
+			
 
 func get_outcome(player_action, enemy_action, enemy_stats):
 	if (player_action == "a" and enemy_action == "a"):
@@ -91,11 +91,28 @@ func get_outcome(player_action, enemy_action, enemy_stats):
 	elif enemy_stats.hp <=0:
 		battle_done = true
 		print("Enemy has been defeated!")
+	
+func run_away(run_stat):
+	if (rng.is_run_successful(run_stat)):
+		print("You ran away!")
+		round_done = true
+		battle_done = true
+	else:
+		print("You tried to run, but failed!")
+		var enemy_action = rng.decide_action(enemy_rngs[0])
+		get_outcome("f", enemy_action, enemy_rngs[0])
+		round_done = true
+		print(player_stats, enemy_rngs[0])			
 		
+		
+
+#TODO: this will probably also be mapped to buttons 	
 func _input(event):
 	if event.is_action_pressed("ui_accept") && round_done == true && battle_done == false:
 		round_done = false
 		do_round()
+	elif event.is_action_pressed("run_away") && round_done == true && battle_done == false:
+		run_away(player_stats.run)
 
 # check continually for win/lose condition
 #func _process(delta):

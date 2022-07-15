@@ -56,6 +56,14 @@ func decide_action(creature_block):
 	else:
 		return "f"
 
+
+func is_run_successful(percentage):
+	var chance = rng.randi_range(1, 100)
+	print(chance)
+	if (chance <= percentage):
+		return true
+	else:
+		return false
 		
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
