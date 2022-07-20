@@ -4,23 +4,23 @@
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var rng 
+var rng: RandomNumberGenerator
 
-func _init():
+func _init() -> void:
 	rng = RandomNumberGenerator.new()
 	rng.randomize()
 
 
-func choose_enemy(enemy_array, enemy_rngs):
-	var choice = rng.randi_range(0, enemy_array.size() - 1)
-	create_enemy_rng(enemy_array[choice], enemy_rngs)
+func choose_enemy(enemy_array: Array, enemy_stats: Dictionary) -> void:
+	var choice: int = rng.randi_range(0, enemy_array.size() - 1)
+	create_enemy_rng(enemy_array[choice], enemy_stats)
 
 #used for the dictionary key.
-var counter = 0;
+var counter: int = 0;
 #Given enemy data from a (JSON?) file (or dictionary within a file), creates a RNG wheel for them
-#Which is then added to dictionary 
-func create_enemy_rng(enemy, enemy_rngs):
-	var enemy_roulette = [] 
+#Which is then added to dictionary passed in
+func create_enemy_rng(enemy: String, enemy_stats: Dictionary) -> void:
+	var enemy_roulette: Array = [] 
 	#TODO: grab these from enemy data.
 	var enemy_attack = 12
 	var enemy_defend = 16
@@ -31,14 +31,14 @@ func create_enemy_rng(enemy, enemy_rngs):
 
 		
 	# adds to enemy rngs with id = counter
-	var enemy_block = {
+	var enemy_block: Dictionary = {
 		"attack": enemy_attack,
 		"defend": enemy_defend,
 		"falter": enemy_falter,
 		"hp": enemy_hp,
 		"name": enemy_name
 	}
-	enemy_rngs[counter] = enemy_block
+	enemy_stats[counter] = enemy_block
 	counter +=1
 
 

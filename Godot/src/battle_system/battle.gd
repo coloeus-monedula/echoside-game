@@ -1,15 +1,18 @@
 extends Node2D
-#list of enemies that will show up
-var enemy_array
-var enemy_rngs = {}
-var rng
-var round_done = false
-var battle_done = false
+#list of enemies that can be encountered in a place
+var enemy_array: Array
+
+var enemy_stats = {}
+const Rng_script = preload("res://src/battle_system/rng.gd")
+var rng: Rng_script
+var round_done: bool = false
+var battle_done: bool = false
 
 var DOT_player = {
 }
-#name: amount
+#name: [counter, amount]
 var DOT_enemies = []
+#[{id:1, #name: [counter, amount]}, {id: 2...} ]
 
 #TODO: should be imported from player state
 var player_stats = {
@@ -17,26 +20,34 @@ var player_stats = {
 	"defend": 12,
 	"falter": 12,
 	"hp": 3,
-	"run": 40
+	"run": 40,
+	"attack_cards": {
+		"basic": {
+			"type": "attack"
+		}
+	},
+	"defend_cards": {},
+	"fumble_cards": {}
 }
+#card is structured like so:
+#name: {type:, }
 
-func _ready():
-	var rng_script = load("res://src/battle_system/rng.gd")
-	rng = rng_script.new()
+func _ready() -> void:
+	rng = Rng_script.new()
 
 
 
-func start_battle(enemy):	
+func start_battle(enemy: Array) -> void:	
 	self.enemy_array = enemy
-	rng.choose_enemy(enemy_array, enemy_rngs)
+	rng.choose_enemy(enemy_array, enemy_stats)
 	print("Press enter to start or f to run")
 	round_done = true
 
 	
-func do_round():
+func do_round() -> void:
 	var player_action = rng.decide_action(player_stats)
 	#TODO: CHANGE SO THIS ISNT HARDCODED
-	var enemy_action = rng.decide_action(enemy_rngs[0])
+	var enemy_action = rng.decide_action(enemy_stats[0])
 	
 	if (player_action == "a"):
 		print("You're set up for an attack!")
@@ -47,55 +58,60 @@ func do_round():
 		player_action = "f"
 		print("You fumbled your set up this time...")
 		
-	print("The ", enemy_rngs[0].name, " is: ")
+	print("The ", enemy_stats[0].name, " is: ")
 	if (enemy_action == "a"):
 		print("Attacking!")
 	elif (enemy_action == "d"):
 		print("Defending!")
 	else:
 		enemy_action = "f"
-		print("Doing nothing...")
+		print("Fumbling...")
 		
 	
-	get_outcome(player_action, enemy_action, enemy_rngs[0])
+	get_outcome(player_action, enemy_action, enemy_stats[0])
 	round_done = true
-	print(player_stats, enemy_rngs[0])
+	print(player_stats, enemy_stats[0])
 			
 
-func get_outcome(player_action, enemy_action, enemy_stats):
+func get_outcome(player_action, enemy_action, enemy_stats) -> void:
+	var player_card = {}
+	var enemy_card = {}
 	
-	
-	# if (player_action == "a" and enemy_action == "a"):
-	# 	player_stats.hp -=1
-	# 	enemy_stats.hp -=1
-	
-	# 	print("Ouch! You both hurt each other...")
-	# elif (player_action == "a" and enemy_action == "d"):
-	# 	print("Your attack is blocked!")
-	# elif (player_action == "d" and enemy_action == "a"):
-	# 	print("You blocked its attack!")
-	# elif (player_action == "d" and enemy_action == "d"):
-	# 	print("You both blocked, but neither of you attack.")
-	# elif (player_action == "f" and enemy_action == "a"):
-	# 	player_stats.hp -=2
-	
-	# 	print("It hit you while you were vulnerable!")
-	# elif (player_action == "a" and enemy_action == "f"):
-	# 	enemy_stats.hp -=2
-	
-	# 	print("You struck it while it was weak!")
-	# elif (player_action == "f" and enemy_action == "d"):
-	# 	print("It defended against nothing.")
-	# elif (player_action == "d" and enemy_action == "f"):
-	# 	print("You defended against nothing.")
-	# else:
-	# 	print("Nothing happens...")
+	if (player_action == "a" and enemy_action == "a"):
+		player_card = choose_card(player_stats.attack_cards, true)
+		enemy_card = choose_card(enemy_stats.attack_cards)
 
-	var player_attack = 0
+	elif (player_action == "a" and enemy_action == "d"):
+		player_card = choose_card(player_stats.attack_cards, true)
+		enemy_card = choose_card(enemy_stats.defend_cards)
 
-	if player_action == "a":
-		#TODO: check for attack buffs
+	elif (player_action == "d" and enemy_action == "a"):
+		player_card = choose_card(player_stats.defend_cards, true)
+		enemy_card = choose_card(enemy_stats.attack_cards)
 
+	elif (player_action == "d" and enemy_action == "d"):
+		player_card = choose_card(player_stats.defend_cards, true)
+		enemy_card = choose_card(enemy_stats.defend_cards)
+
+	elif (player_action == "f" and enemy_action == "a"):
+		player_card = choose_card(player_stats.fumble_cards, true)
+		enemy_card = choose_card(enemy_stats.attack_cards)
+	
+	elif (player_action == "a" and enemy_action == "f"):
+		player_card = choose_card(player_stats.attack_cards, true)
+		enemy_card = choose_card(enemy_stats.fumble_cards)
+	
+	elif (player_action == "f" and enemy_action == "d"):
+		player_card = choose_card(player_stats.fumble_cards, true)
+		enemy_card = choose_card(enemy_stats.fumble_cards)
+
+	elif (player_action == "d" and enemy_action == "f"):
+		player_card = choose_card(player_stats.defend_cards, true)
+		enemy_card = choose_card(enemy_stats.fumble_cards)
+
+
+	else: 
+		print("Nothing happens... This is an error and shouldn't occur.")
 	
 	#var player_damage = damage_hp(player_stats)
 		
@@ -107,17 +123,17 @@ func get_outcome(player_action, enemy_action, enemy_stats):
 		print("Enemy has been defeated!")
 	
 # ACTIONS
-func run_away(run_stat):
+func run_away(run_stat) -> void:
 	if (rng.is_run_successful(run_stat)):
 		print("You ran away!")
 		round_done = true
 		battle_done = true
 	else:
 		print("You tried to run, but failed!")
-		var enemy_action = rng.decide_action(enemy_rngs[0])
-		get_outcome("f", enemy_action, enemy_rngs[0])
+		var enemy_action = rng.decide_action(enemy_stats[0])
+		get_outcome("f", enemy_action, enemy_stats[0])
 		round_done = true
-		print(player_stats, enemy_rngs[0])			
+		print(player_stats, enemy_stats[0])			
 
 #pure numbers here?
 func damage_hp(stats, defend, attack, attack_buff = 0, defense_buff = 0):
@@ -126,25 +142,34 @@ func damage_hp(stats, defend, attack, attack_buff = 0, defense_buff = 0):
 		hp_loss = 0
 	stats.hp -= hp_loss
 
-#TODO: add a rounds for damage over time
-func do_DOT(player_stats, enemy_rngs):
+func choose_card(cards, isPlayer=false):
+	print("")
+
+
+func do_DOT(player_stats, enemy_stats):
 	for key in DOT_player.keys():
-		var damage =  DOT_player[key]
-		print("Player taking damage from " + key + "for" + damage)
-		player_stats.hp -= damage
+		#only affects if counter is above 0
+		var counter = DOT_player[key][0]
+		if (counter > 0):
+			var damage =  DOT_player[key][1]
+			print("Player taking damage from " + key + "for" + damage)
+			player_stats.hp -= damage
+			#take 1 from counter
+			DOT_player[key][0] -= 1
 
 	for enemy in DOT_enemies:
-		#individual enemy
+		#individual enemy 
 		var id = enemy.id
 		for key in enemy.keys():
 			if (key != "id"): 
-				var damage = enemy[key]
-				var name = enemy_rngs[id].name
-				print ("Enemy "+name + "taking damage from" + key + "for" + damage)
-				enemy_rngs[id].hp -= damage
-
-
-
+				var counter = DOT_player[key][0]
+				if (counter > 0):
+					var damage = enemy[key][1]
+					var name = enemy_stats[id].name
+					print ("Enemy "+name + "taking damage from" + key + "for" + damage)
+					enemy_stats[id].hp -= damage
+					DOT_player[key][0] -= 1
+					
 
 
 		
