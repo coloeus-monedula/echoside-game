@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/card_code/atk_card.gd" type="Script" id=1]
+[ext_resource path="res://src/assets/card_assets/atk_card.png" type="Texture" id=2]
+
+[node name="atk_card" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="AtkCard" type="Sprite" parent="."]
+position = Vector2( 1, 0 )
+texture = ExtResource( 2 )

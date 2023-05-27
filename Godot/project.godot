@@ -59,21 +59,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/dialogic/Other/DialogicUtil.gd"
 }, {
-"base": "Node",
-"class": "GDInv_Inventory",
-"language": "GDScript",
-"path": "res://addons/gdinv/GDInv_Inventory.gd"
-}, {
-"base": "Object",
-"class": "GDInv_ItemDefinition",
-"language": "GDScript",
-"path": "res://addons/gdinv/GDInv_ItemDefinition.gd"
-}, {
-"base": "Object",
-"class": "GDInv_ItemStack",
-"language": "GDScript",
-"path": "res://addons/gdinv/GDInv_ItemStack.gd"
-}, {
 "base": "PanelContainer",
 "class": "HistoryRow",
 "language": "GDScript",
@@ -90,9 +75,6 @@ _global_script_class_icons={
 "DialogicParser": "",
 "DialogicResources": "",
 "DialogicUtil": "",
-"GDInv_Inventory": "",
-"GDInv_ItemDefinition": "",
-"GDInv_ItemStack": "",
 "HistoryRow": ""
 }
 
@@ -104,7 +86,7 @@ gdinv/RecursiveLoad=true
 
 [application]
 
-config/name="Godot"
+config/name="Echoside"
 run/main_scene="res://Root.tscn"
 config/icon="res://icon.png"
 
